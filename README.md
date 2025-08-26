@@ -74,9 +74,11 @@ Delete works by rewriting the file without the deleted item entry.
 bash
 git clone https://github.com/your-username/Department-Store-Management-System.git
 cd Department-Store-Management-System
-2. Run the Program
+
+3. Run the Program
 bash
 python dsms.py
+
 📂 File Structure
 text
 Department-Store-Management-System/
@@ -84,6 +86,7 @@ Department-Store-Management-System/
 ├── dsms.py       # Main Python source code
 ├── book.txt      # File to store all items (auto-created if absent)
 └── README.md     # Documentation
+
 💻 Sample Control Panel
 text
 ==== Department Store Management System ====
@@ -92,6 +95,7 @@ text
 3. Update Item
 4. Delete Item
 5. Exit
+   
 ⚡ Future Improvements
 Add GUI using Tkinter / PyQt.
 
