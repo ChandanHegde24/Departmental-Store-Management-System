@@ -1,113 +1,150 @@
+import customtkinter as ctk  
 import os
 
-class DepartmentStore:
+ctk.set_appearance_mode("system")  # "dark" or "light"
+ctk.set_default_color_theme("blue")  # Try "dark-blue", "green", etc.
+
+class ModernDSMS(ctk.CTk):
     def __init__(self, filename="book.txt"):
+        super().__init__()
         self.filename = filename
+        self.title("Department Store Management System")
+        self.geometry("700x500")
+        self.create_widgets()
+        self.load_items()
 
-    def add_item(self):
-        with open(self.filename, "a") as f:
-            while True:
-                code = input("Enter Item Code: ")
-                name = input("Enter Item Name: ")
-                company = input("Enter Company Name: ")
-                qty = input("Enter No. of items: ")
+    def create_widgets(self):
+        # Header
+        header = ctk.CTkLabel(self, text="Department Store", font=ctk.CTkFont(size=28, weight="bold"))
+        header.pack(pady=16)
 
-                f.write(f"{code},{name},{company},{qty}\n")
-                print("Item added successfully!")
+        # Control Buttons
+        controls = ctk.CTkFrame(self)
+        controls.pack(pady=10)
+        ctk.CTkButton(controls, text="Add Item", command=self.add_item, width=120).pack(side="left", padx=5)
+        ctk.CTkButton(controls, text="Update Item", command=self.update_item, width=120).pack(side="left", padx=5)
+        ctk.CTkButton(controls, text="Delete Item", command=self.delete_item, width=120).pack(side="left", padx=5)
 
-                ch = input("Do you want to Add Another Item (y/n)? ")
-                if ch.lower() != "y":
-                    break
+        # Search Bar
+        search_frame = ctk.CTkFrame(self)
+        search_frame.pack()
+        self.search_var = ctk.StringVar()
+        ctk.CTkLabel(search_frame, text="Search:").pack(side="left", padx=5)
+        ctk.CTkEntry(search_frame, textvariable=self.search_var, width=200).pack(side="left")
+        ctk.CTkButton(search_frame, text="Go", command=self.search_item).pack(side="left", padx=5)
 
-    def view_items(self):
+        # Items Table
+        table_frame = ctk.CTkFrame(self)
+        table_frame.pack(fill="both", expand=True, pady=12)
+        self.table = ctk.CTkTextbox(table_frame, width=580, height=300, font=("Segoe UI", 12))
+        self.table.pack(padx=10, pady=10)
+
+    def load_items(self, filter_func=None):
+        self.table.delete("1.0", ctk.END)
         if not os.path.exists(self.filename):
-            print("No items found!")
+            self.table.insert(ctk.END, "No items found!\n")
             return
         with open(self.filename, "r") as f:
-            data = f.readlines()
-            if not data:
-                print("No items available in store.")
+            lines = [line.strip() for line in f if line.strip()]
+        items = [line.split(",") for line in lines]
+        if filter_func:
+            items = [i for i in items if filter_func(i)]
+        self.table.insert(ctk.END, f"{'Code':<12}{'Name':<18}{'Company':<20}{'Qty':<6}\n")
+        self.table.insert(ctk.END, "-"*60 + "\n")
+        for itm in items:
+            self.table.insert(ctk.END, f"{itm:<12}{itm[9]:<18}{itm[10]:<20}{itm[11]:<6}\n")
+
+    def add_item(self):
+        # Modern dialog using CustomTkinter
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Add Item")
+        dialog.geometry("300x280")
+        fields = ["Item Code", "Item Name", "Company", "No. of Items"]
+        entries = {}
+        for i, label in enumerate(fields):
+            ctk.CTkLabel(dialog, text=label).pack(pady=4)
+            entry = ctk.CTkEntry(dialog)
+            entry.pack()
+            entries[label] = entry
+        def save():
+            values = [entries[f].get() for f in fields]
+            if not all(values):
+                ctk.CTkMessagebox(dialog, message="All fields must be filled!", icon="warning")
                 return
-            print("\n--- Store Inventory ---")
-            print("Code\tName\tCompany\tQuantity")
-            print("-------------------------------")
-            for line in data:
-                code, name, company, qty = line.strip().split(",")
-                print(f"{code}\t{name}\t{company}\t{qty}")
+            with open(self.filename, "a") as f:
+                f.write(",".join(values) + "\n")
+            self.load_items()
+            dialog.destroy()
+        ctk.CTkButton(dialog, text="Save", command=save).pack(pady=8)
 
     def update_item(self):
-        code_to_update = input("Enter Item Code to update: ")
-        found = False
+        # For simplicity, updates by code (prompt and modal)
+        code = ctk.CTkInputDialog(text="Enter Item Code to update:", title="Update")
+        code_val = code.get_input()
+        if not code_val: return
         updated_data = []
-
+        found = False
         with open(self.filename, "r") as f:
             for line in f:
-                code, name, company, qty = line.strip().split(",")
-                if code == code_to_update:
+                parts = line.strip().split(",")
+                if parts == code_val:
                     found = True
-                    print(f"Current -> {code}, {name}, {company}, {qty}")
-                    code = input("Enter new Item Code: ")
-                    name = input("Enter new Item Name: ")
-                    company = input("Enter new Company Name: ")
-                    qty = input("Enter new No. of Items: ")
-                    updated_data.append(f"{code},{name},{company},{qty}\n")
+                    # Pop dialog for editing
+                    dialog = ctk.CTkToplevel(self)
+                    dialog.title("Update Item")
+                    dialog.geometry("300x280")
+                    fields = ["Item Code", "Item Name", "Company", "No. of Items"]
+                    entries = {}
+                    for i, label in enumerate(fields):
+                        ctk.CTkLabel(dialog, text=label).pack(pady=4)
+                        entry = ctk.CTkEntry(dialog)
+                        entry.insert(0, parts[i] if i < len(parts) else "")
+                        entry.pack()
+                        entries[label] = entry
+                    def save():
+                        values = [entries[f].get() for f in fields]
+                        updated_data.append(",".join(values) + "\n")
+                        with open(self.filename, "r") as f:
+                            for line in f:
+                                ps = line.strip().split(",")
+                                if ps != code_val:
+                                    updated_data.append(line)
+                        with open(self.filename, "w") as wf:
+                            wf.writelines(updated_data)
+                        self.load_items()
+                        dialog.destroy()
+                    ctk.CTkButton(dialog, text="Update", command=save).pack(pady=8)
+                    return
                 else:
                     updated_data.append(line)
-
-        if found:
-            with open(self.filename, "w") as f:
-                f.writelines(updated_data)
-            print("Item updated successfully!")
-        else:
-            print("Item not found!")
+        if not found:
+            ctk.CTkMessagebox(self, message="Item not found!", icon="warning")
 
     def delete_item(self):
-        code_to_delete = input("Enter Item Code to delete: ")
-        found = False
+        code = ctk.CTkInputDialog(text="Enter Item Code to delete:", title="Delete")
+        code_val = code.get_input()
         updated_data = []
-
+        found = False
         with open(self.filename, "r") as f:
             for line in f:
-                code, name, company, qty = line.strip().split(",")
-                if code == code_to_delete:
+                parts = line.strip().split(",")
+                if parts == code_val:
                     found = True
-                    print(f"Deleting -> {code}, {name}, {company}, {qty}")
                 else:
                     updated_data.append(line)
-
         if found:
             with open(self.filename, "w") as f:
                 f.writelines(updated_data)
-            print("Item deleted successfully!")
+            self.load_items()
+            ctk.CTkMessagebox(self, message="Item deleted!", icon="info")
         else:
-            print("Item not found!")
+            ctk.CTkMessagebox(self, message="Item not found!", icon="warning")
 
-    def control_panel(self):
-        while True:
-            print("\n==== Department Store Management System ====")
-            print("1. Add Item")
-            print("2. View Items")
-            print("3. Update Item")
-            print("4. Delete Item")
-            print("5. Exit")
-            choice = input("Enter your choice: ")
+    def search_item(self):
+        query = self.search_var.get().lower()
+        def filter_func(item):
+            return any(query in s.lower() for s in item)
+        self.load_items(filter_func if query else None)
 
-            if choice == "1":
-                self.add_item()
-            elif choice == "2":
-                self.view_items()
-            elif choice == "3":
-                self.update_item()
-            elif choice == "4":
-                self.delete_item()
-            elif choice == "5":
-                print("Exiting... Goodbye!")
-                break
-            else:
-                print("Invalid choice! Please try again.")
-
-
-# Run the DSMS
 if __name__ == "__main__":
-    ds = DepartmentStore()
-    ds.control_panel()
+    ModernDSMS()
