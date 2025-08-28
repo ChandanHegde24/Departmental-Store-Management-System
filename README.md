@@ -1,89 +1,73 @@
-# 🏬 Department Store Management System (DSMS)
+# Department Store Management System (ModernDSMS)
 
-A **Department Store Management System (DSMS)** in Python — simple, fast, and efficient command-line software to manage the inventory and sales of your department store!
+A simple desktop application built with [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter) for managing items in a department store. You can add, update, delete, and search items stored in a plain text file (`book.txt`).
 
----
+## Features
 
-## ✨ Overview
+- **Modern UI:** Uses CustomTkinter for a modern, themed interface.
+- **CRUD Operations:** Add, update, and delete items.
+- **Search:** Find items by code, name, or company.
+- **Persistent Storage:** Items stored in a file (`book.txt`).
+- **Easy Setup:** No database required; just Python and CustomTkinter.
 
-DSMS lets store admins easily:
-- **Add**, **View**, **Update**, and **Delete** items
-- All data is securely stored in a file (`book.txt`) for persistence
+## Requirements
 
----
+- Python 3.7+
+- [CustomTkinter](https://github.com/TomSchimansky/CustomTkinter)
+- Tkinter (bundled with Python)
 
-## 🚀 Features
-
-| Feature        | Description                                                                 |
-|:--------------:|:---------------------------------------------------------------------------:|
-| ➕ **Add Item**    | Enter Item Code, Name, Company, & Quantity — stored in `book.txt`           |
-| 👀 **View Items**  | See all items in a neatly formatted table                                  |
-| ✏️ **Update Item** | Modify any item’s details using the Item Code                              |
-| ❌ **Delete Item** | Remove any item by Item Code — error shown if code not found               |
-| 🚪 **Exit**        | Exit the program securely                                                  |
-
----
-
-## 🧑‍💻 How It Works
-
-- The `DepartmentStore` class manages all operations: add, view, update, delete.
-- **Control Panel:** Easy menu for quick admin actions
-- **File Operations:** All data handled in `book.txt` for easy access and reliability
-
----
-
-## 🛠️ Installation & Usage
+Install CustomTkinter via pip:
 
 ```bash
-# 1. Clone the Repository
-git clone https://github.com/your-username/Department-Store-Management-System.git
-cd Department-Store-Management-System
-
-# 2. Run the Program
-python dsms.py
+pip install customtkinter
 ```
+
+## Usage
+
+1. **Clone this repository** or copy the code into a file named `modern_dsms.py`.
+2. Make sure a `book.txt` file exists in the same directory (it will be created automatically if missing).
+3. Run the application:
+
+```bash
+python modern_dsms.py
+```
+
+## File Format
+
+Items are stored in `book.txt` as comma-separated lines:
+
+```
+item_code,item_name,company_name,quantity
+```
+
+Example:
+
+```
+101,Detergent,ACME,50
+102,Soap,GoodCare,30
+```
+
+## Main Components
+
+- **Add Item:** Enter item details in a pop-up and save.
+- **Update Item:** Select an item in the table, edit details in a pop-up, and update.
+- **Delete Item:** Select an item and confirm deletion.
+- **Search:** Enter a query to find items by code, name, or company. Hit "Clear" to reset.
+
+## Screenshots
+
+*(Add your own screenshots here)*
+
+## Notes
+
+- The UI uses the system theme by default; you can change between "dark" or "light" in the code.
+- All data is stored locally in `book.txt`. No cloud or database integration.
+
+## License
+
+MIT License (or specify your own)
 
 ---
 
-## 📂 File Structure
-
-```
-Department-Store-Management-System/
-│
-├── dsms.py       # Main Python source code
-├── book.txt      # Stores all items (auto-created if absent)
-└── README.md     # Documentation
-```
-
----
-
-## 📋 Sample Control Panel
-
-```
-==== Department Store Management System ====
-1. Add Item
-2. View Items
-3. Update Item
-4. Delete Item
-5. Exit
-```
-
----
-
-## ⚡ Future Improvements
-
-- Add a GUI (Tkinter / PyQt)
-- Implement search & filter options
-- Add login authentication for admin
-- Replace text file with SQLite/SQL database for scalability
-
----
-
-## 📜 License
-
-This project is **open source** and available under the [MIT License](LICENSE).
-
----
-
-> 🚩 **Contributions Welcome!**  
-> Feel free to fork, open issues, or submit pull requests to improve DSMS 😊
+**Author:** Chandan Hegde  
+**Contact:** [Your GitHub Profile](https://github.com/ChandanHegde24)
